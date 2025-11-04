@@ -1,0 +1,30 @@
+import pandas as pd
+import random
+import string
+
+#  Charger le dataset
+df = pd.read_csv("/content/test.csv")  # adapte le chemin si nécessaire
+
+#  Fonction pour générer une adresse mail fictive
+def generate_email(name=None):
+    domains = ["gmail.com", "yahoo.com", "outlook.com", "example.com"]
+    if name and isinstance(name, str):
+        base = name.lower().replace(" ", ".").replace("_", ".")
+    else:
+        base = ''.join(random.choices(string.ascii_lowercase, k=7))
+    return f"{base}{random.randint(1,999)}@{random.choice(domains)}"
+
+#  Ajouter la colonne "email"
+# Si ton dataset a une colonne de noms (ex: "Name", "Nom"), remplace "Name" ci-dessous.
+if "Name" in df.columns:
+    df["email"] = df["Name"].apply(generate_email)
+elif "Nom" in df.columns:
+    df["email"] = df["Nom"].apply(generate_email)
+else:
+    df["email"] = [generate_email() for _ in range(len(df))]
+
+#  Sauvegarder le nouveau dataset
+df.to_csv("/content/test_with_emails.csv", index=False)
+
+#  Afficher les premières lignes
+df
